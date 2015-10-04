@@ -3,18 +3,17 @@
 <meta charset="utf-8" />
 
 <title>Sub to Hue</title>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script language="javascript" type="text/javascript">
 
 	var wsUri = "ws://192.16.64.207/";
 	var output;
 	var username = "justinfan" + Math.round(Math.random() * (999999 - 100000) + 100000);
-	var channel = "dimitrisphotography";
 
 	function init()
 	{
 		output = document.getElementById("output");
-		testWebSocket();
+		/*testWebSocket();*/
 	}
 
 	function testWebSocket()
@@ -32,7 +31,7 @@
 		doSend("CAP REQ :twitch.tv/tags twitch.tv/commands\n");
 		doSend("PASS blah\n");
 		doSend("NICK " + username + "\n");
-		doSend("JOIN #" + channel + "\n");
+		doSend("JOIN #" + $("#cname")[0].value.toLowerCase() + "\n");
 	}
 
 	function onClose(evt)
@@ -42,12 +41,24 @@
 
 	function onMessage(evt)
 	{
-		user = evt.data.split(" :")[1].split("!")[0].toLowerCase();
+		if (evt.data == "PING :tmi.twitch.tv\n")
+		{
+			doSend("PONG\n");
+		}
+		if (evt.data.startsWith(":twitchnotify!twitchnotify@twitchnotify.tmi.twitch.tv"))
+		{
+			/*alert(evt.data);*/
+			writeToScreen(evt.data.split(" :")[1]);
+			user = evt.data.split(" :")[1].split(" ")[0];
+			alert(user);
+		}
+		console.log(evt.data);
+		/*user = evt.data.split(" :")[1].split("!")[0].toLowerCase();
 		text = evt.data.split(" :").slice(2).join(" :");
 		console.log(user);
 		console.log(evt);
 		writeToScreen('<span style="color: blue;">' + user + ': ' + text +'</span>');
-		/*websocket.close();*/
+		websocket.close();*/
 	}
 
 	function onError(evt)
@@ -74,5 +85,9 @@
 </script>
 
 <h2>Sub to Hue</h2>
-
+Channel:<br />
+<input type="text" id="cname">
+<br />
+<button onclick="testWebSocket()">Connect</button>
+<button onclick="websocket.close()">Disconnect</button>
 <div id="output"></div>
