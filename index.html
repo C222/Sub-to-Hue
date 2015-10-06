@@ -9,11 +9,72 @@
 	var wsUri = "ws://192.16.64.207/";
 	var output;
 	var username = "justinfan" + Math.round(Math.random() * (999999 - 100000) + 100000);
+	var hueuser;
+	var bulbs;
+	var bleedPurple = '{"on":true, "sat":255, "bri":255,"hue":47695}';
+	var bulbOff = '{"on":false}';
 
 	function init()
 	{
 		output = document.getElementById("output");
+		$("#chatdis").prop("disabled",true);
 		/*testWebSocket();*/
+	}
+
+	function startHue()
+	{
+		ip = $("#bname")[0].value;
+		if(window.localStorage.getItem("hueuser"))
+		{
+			hueuser = window.localStorage.getItem("hueuser");
+			$.getJSON("http://" + ip + "/api/" + hueuser + "/lights", cacheBulbs);
+		}
+		else
+		{
+			$.post("http://" + ip + "/api", '{"devicetype":"subtohue1458949"}', finishHue);
+		}
+		
+		/*console.log(reply);
+		
+		}*/
+	}
+	
+	function finishHue(data)
+	{
+		data = data[0];
+		if (("error" in data) && (data.error.type == 101))
+		{
+			alert("Please press the button on your bridge.");
+		}
+		else if ("success" in data)
+		{
+			hueuser = data.success.username;
+			window.localStorage.setItem("hueuser", hueuser);
+			console.log(hueuser);
+			$.getJSON("http://" + ip + "/api/" + hueuser + "/lights", cacheBulbs);
+		}
+		else
+		{
+			console.log(data);
+		}
+	}
+	
+	function blinkBulb(color, delay, num)
+	{
+	}
+	
+	function purpleHome()
+	{
+		for (var b in bulbs)
+		{
+			console.log(bulbs[b]);
+		}
+	}
+	
+	function cacheBulbs(data)
+	{
+		bulbs = data;
+		purpleHome();
 	}
 
 	function testWebSocket()
@@ -32,16 +93,20 @@
 		doSend("PASS blah\n");
 		doSend("NICK " + username + "\n");
 		doSend("JOIN #" + $("#cname")[0].value.toLowerCase() + "\n");
+		$("#chatcon").prop("disabled",true);
+		$("#chatdis").prop("disabled",false);
 	}
 
 	function onClose(evt)
 	{
 		writeToScreen("DISCONNECTED");
+		$("#chatcon").prop("disabled",false);
+		$("#chatdis").prop("disabled",true);
 	}
 
 	function onMessage(evt)
 	{
-		if (evt.data == "PING :tmi.twitch.tv\n")
+		if (evt.data.startsWith("PING"))
 		{
 			doSend("PONG\n");
 		}
@@ -50,7 +115,7 @@
 			/*alert(evt.data);*/
 			writeToScreen(evt.data.split(" :")[1]);
 			user = evt.data.split(" :")[1].split(" ")[0];
-			alert(user);
+			/*alert(user);*/
 		}
 		console.log(evt.data);
 		/*user = evt.data.split(" :")[1].split("!")[0].toLowerCase();
@@ -85,9 +150,13 @@
 </script>
 
 <h2>Sub to Hue</h2>
-Channel:<br />
-<input type="text" id="cname">
+Channel:<input type="text" id="cname" />
 <br />
-<button onclick="testWebSocket()">Connect</button>
-<button onclick="websocket.close()">Disconnect</button>
+<button id="chatcon" onclick="testWebSocket()">Connect</button>
+<button id="chatdis" onclick="websocket.close()">Disconnect</button>
+<br />
+<br />
+Hue Bridge IP:<input type="text" id="bname" />
+<br />
+<button id="huecon" onclick="startHue()">Hue Connect</button>
 <div id="output"></div>
