@@ -60,10 +60,6 @@
 		}
 	}
 	
-	function blinkBulb(color, delay, num)
-	{
-	}
-	
 	function purpleHome()
 	{
 		if(!lock)
@@ -76,8 +72,8 @@
 					$.getJSON("http://" + ip + "/api/" + hueuser + "/lights/" + bno, function(data)
 					{
 						oldcolor = JSON.stringify(data.state);
-						doColor(bleedPurple, bno, true);
-						window.setTimeout(doColor, 10000, oldcolor, bno, false);
+						doColor($("#color").val(), bno, true);
+						window.setTimeout(doColor, parseInt($("#time").val()), oldcolor, bno, false);
 					});
 				}(b);
 			}
@@ -144,8 +140,8 @@
 			purpleHome();
 			/*alert(user);*/
 		}
-		console.log(evt.data);
-		/*user = evt.data.split(" :")[1].split("!")[0].toLowerCase();
+		/*console.log(evt.data);
+		user = evt.data.split(" :")[1].split("!")[0].toLowerCase();
 		text = evt.data.split(" :").slice(2).join(" :");
 		console.log(user);
 		console.log(evt);
@@ -186,4 +182,27 @@ Channel:<input type="text" id="cname" />
 Hue Bridge IP:<input type="text" id="bname" />
 <br />
 <button id="huecon" onclick="startHue()">Hue Connect</button>
+<br />
+Blink: <select id="time">
+  <option value="1000">1 Second</option>
+  <option value="2000">2 Seconds</option>
+  <option value="3000">3 Seconds</option>
+  <option value="4000">4 Seconds</option>
+  <option value="5000">5 Seconds</option>
+  <option value="6000">6 Seconds</option>
+  <option value="7000">7 Seconds</option>
+  <option value="8000">8 Seconds</option>
+  <option value="9000">9 Seconds</option>
+  <option value="10000">10 Seconds</option>
+</select>
+Color <select id="color">
+  <option value='{"on":true, "sat":255, "bri":255,"hue":47695}'>bleedPurple</option>
+  <option value='{"on":true, "sat":255, "bri":255,"hue":0}'>Red</option>
+  <option value='{"on":true, "sat":255, "bri":255,"hue":12750}'>Yellow</option>
+  <option value='{"on":true, "sat":255, "bri":255,"hue":25500}'>Green</option>
+  <option value='{"on":true, "sat":255, "bri":255,"hue":56100}'>Pink</option>
+  <option value='{"on":true, "sat":255, "bri":255,"hue":46920}'>Blue</option>
+  <option value='{"on":true, "sat":0}'>White</option>
+  <option value='{"on":false}'>Off</option>
+</select>
 <div id="output"></div>
