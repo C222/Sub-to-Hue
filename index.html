@@ -13,6 +13,7 @@
 	var bulbs;
 	var bleedPurple = '{"on":true, "sat":255, "bri":255,"hue":47695}';
 	var bulbOff = '{"on":false}';
+	var lock = false;
 
 	function init()
 	{
@@ -65,16 +66,41 @@
 	
 	function purpleHome()
 	{
-		for (var b in bulbs)
+		if(!lock)
 		{
-			console.log(bulbs[b]);
+			lock = true;
+			for (var b in bulbs)
+			{
+				lambda = function(bno)
+				{
+					$.getJSON("http://" + ip + "/api/" + hueuser + "/lights/" + bno, function(data)
+					{
+						oldcolor = JSON.stringify(data.state);
+						doColor(bleedPurple, bno, true);
+						window.setTimeout(doColor, 10000, oldcolor, bno, false);
+					});
+				}(b);
+			}
 		}
+	}
+	
+	function doColor(color, b, lockend)
+	{
+		console.log("Setting " + bulbs[b].name + " to " + color);
+		$.ajax({
+			url: "http://" + ip + "/api/" + hueuser + "/lights/" + b + "/state",
+			type: 'PUT',
+			data: color
+		});
+		lock = lockend;
 	}
 	
 	function cacheBulbs(data)
 	{
 		bulbs = data;
 		purpleHome();
+		$("#huecon").prop("disabled",true);
+		$("#bname").prop("disabled",true);
 	}
 
 	function testWebSocket()
@@ -115,6 +141,7 @@
 			/*alert(evt.data);*/
 			writeToScreen(evt.data.split(" :")[1]);
 			user = evt.data.split(" :")[1].split(" ")[0];
+			purpleHome();
 			/*alert(user);*/
 		}
 		console.log(evt.data);
@@ -125,7 +152,7 @@
 		writeToScreen('<span style="color: blue;">' + user + ': ' + text +'</span>');
 		websocket.close();*/
 	}
-
+	
 	function onError(evt)
 	{
 		writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
