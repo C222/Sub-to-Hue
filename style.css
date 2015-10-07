@@ -1,0 +1,45 @@
+@import url(https://fonts.googleapis.com/css?family=Oswald|Open+Sans+Condensed:300|Open+Sans);
+
+#contents, html, body
+{
+	height: auto;
+	overflow: hidden;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	font-family: 'Open Sans', sans-serif;
+}
+
+select, button, input
+{
+	font-family: 'Open Sans', sans-serif;
+	margin: 1px;
+}
+
+h1, h2
+{
+	font-family: 'Oswald', sans-serif;
+}
+
+p
+{
+	font-family: 'Open Sans Condensed', sans-serif;
+}
+
+#controls
+{
+	padding: 1%;
+	width: 23%;
+	float: left;
+	height: 100%;
+}
+
+#output
+{
+	padding: 1%;
+	float: none; /* not needed, just for clarification */
+	/* the next props are meant to keep this block independent from the other floated one */
+	width: 73%;
+	overflow-y: scroll;
+	height: 100%;
+}
