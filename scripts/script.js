@@ -1,4 +1,4 @@
-var wsUri = "ws://192.16.64.207/";
+var wsUri = "wss://irc-ws.chat.twitch.tv/";
 var output;
 var username = "justinfan" + Math.round(Math.random() * (999999 - 100000) + 100000);
 var hueuser;
@@ -26,9 +26,9 @@ function startHue()
 	{
 		$.post("http://" + ip + "/api", '{"devicetype":"subtohue1458949"}', finishHue);
 	}
-	
+
 	/*console.log(reply);
-	
+
 	}*/
 }
 
@@ -124,13 +124,32 @@ function onMessage(evt)
 	{
 		doSend("PONG\n");
 	}
-	if (evt.data.startsWith(":twitchnotify!twitchnotify@twitchnotify.tmi.twitch.tv"))
+	tmi = evt.data.split(" :tmi.twitch.tv ");
+	// console.log(tmi);
+	// console.log($("#subenable")[0].checked);
+	// console.log(tmi.length);
+	if ($("#subenable")[0].checked)
 	{
-		/*alert(evt.data);*/
-		writeToScreen("<h1>" + evt.data.split(" :")[1] + "</h1>");
-		user = evt.data.split(" :")[1].split(" ")[0];
-		purpleHome();
-		/*alert(user);*/
+		// console.log(tmi[1].startsWith("USERNOTICE"));
+		if(tmi.length > 1 && tmi[1].startsWith("USERNOTICE"))
+		{
+			/*alert(evt.data);*/
+			user = tmi[0].split("display-name=")[1].split(";")[0];
+			message = tmi[1].split(":")[1];
+			writeToScreen("<h1>" + user + "</h1>");
+			if (message != undefined)
+			{
+				writeToScreen(message);
+			}
+			purpleHome();
+			/*alert(user);*/
+		}
+		else if(tmi.length == 1 && tmi[1].startsWith(":twitchnotify!twitchnotify@twitchnotify.tmi.twitch.tv PRIVMSG"))
+		{
+			user = tmi[0].split(" :")[1].split(" ")[0];
+			writeToScreen("<h1>" + user + "</h1>");
+			purpleHome();
+		}
 	}
 	/*console.log(evt.data);
 	user = evt.data.split(" :")[1].split("!")[0].toLowerCase();
