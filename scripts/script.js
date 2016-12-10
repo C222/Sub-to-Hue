@@ -124,31 +124,77 @@ function onMessage(evt)
 	{
 		doSend("PONG\n");
 	}
-	tmi = evt.data.split(" :tmi.twitch.tv ");
-	// console.log(tmi);
-	// console.log($("#subenable")[0].checked);
-	// console.log(tmi.length);
-	if ($("#subenable")[0].checked)
+	else
 	{
-		// console.log(tmi[1].startsWith("USERNOTICE"));
-		if(tmi.length > 1 && tmi[1].startsWith("USERNOTICE"))
+		if ($("#subenable")[0].checked)
 		{
-			/*alert(evt.data);*/
-			user = tmi[0].split("display-name=")[1].split(";")[0];
-			message = tmi[1].split(":")[1];
-			writeToScreen("<h1>" + user + "</h1>");
-			if (message != undefined)
+			tmi = evt.data.split(" :tmi.twitch.tv ");
+			if(tmi.length > 1 && tmi[1].startsWith("USERNOTICE"))
 			{
-				writeToScreen(message);
+				/*alert(evt.data);*/
+				user = tmi[0].split("display-name=")[1].split(";")[0];
+				message = tmi[1].split(":")[1];
+				writeToScreen("<h1>" + user + "</h1>");
+				if (message != undefined)
+				{
+					writeToScreen(message);
+				}
+				purpleHome();
+				/*alert(user);*/
 			}
-			purpleHome();
-			/*alert(user);*/
+			else if(tmi.length == 1 && tmi[1].startsWith(":twitchnotify!twitchnotify@twitchnotify.tmi.twitch.tv PRIVMSG"))
+			{
+				user = tmi[0].split(" :")[1].split(" ")[0];
+				writeToScreen("<h1>" + user + "</h1>");
+				purpleHome();
+			}
 		}
-		else if(tmi.length == 1 && tmi[1].startsWith(":twitchnotify!twitchnotify@twitchnotify.tmi.twitch.tv PRIVMSG"))
+		if ($("#cmdenable")[0].checked && $("#ctext")[0].value != "")
 		{
-			user = tmi[0].split(" :")[1].split(" ")[0];
-			writeToScreen("<h1>" + user + "</h1>");
-			purpleHome();
+			mod = evt.data.split(";mod=")[1].split(";")[0] == "1";
+			dname = evt.data.split(";display-name=")[1].split(";")[0];
+			uname = evt.data.split(" :")[1].split("!")[0];
+			mod |= uname == $("#cname")[0].value.toLowerCase();
+			mod = Boolean(mod);
+			message = evt.data.split(" :")[2];
+			if(message.startsWith($("#ctext")[0].value + " "))
+			{
+				message = message.replace($("#ctext")[0].value + " ", "");
+				message = message.trimLeft();
+				message = message.trimRight("\n");
+				color = Color.parse(message);
+				if (color == null)
+				{
+					color = Color.get(message);
+				}
+				if (color != null)
+				{
+					color = color.rgbData();
+					color = colorConverter.rgbToXyBri({r: color[0]/255,
+						g: color[1]/255,
+						b: color[2]/255});
+					to_send = {"on":true,
+						"bri":Math.round(color.bri * 255),
+						"xy":[color.x, color.y]};
+					if ($("#bright")[0].checked)
+					{
+						to_send.bri = 127 + (255 - 127) * (to_send.bri) / (255);
+						to_send.bri = Math.round(to_send.bri);
+					}
+					for (var b in bulbs)
+					{
+						lambda = function(bno)
+						{
+							$.getJSON("http://" + ip + "/api/" + hueuser + "/lights/" + bno, function(data)
+							{
+								doColor(JSON.stringify(to_send), bno, false);
+							});
+						}(b);
+					}
+					writeToScreen("<h1>" + dname + "</h1>");
+					writeToScreen("Set color to " + message);
+				}
+			}
 		}
 	}
 	/*console.log(evt.data);
