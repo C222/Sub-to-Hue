@@ -142,7 +142,7 @@ function onMessage(evt)
 				purpleHome();
 				/*alert(user);*/
 			}
-			else if(tmi.length == 1 && tmi[1].startsWith(":twitchnotify!twitchnotify@twitchnotify.tmi.twitch.tv PRIVMSG"))
+			else if(tmi.length == 1 && tmi[0].startsWith(":twitchnotify!twitchnotify@twitchnotify.tmi.twitch.tv PRIVMSG"))
 			{
 				user = tmi[0].split(" :")[1].split(" ")[0];
 				writeToScreen("<h1>" + user + "</h1>");
