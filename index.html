@@ -30,18 +30,9 @@
 				<br />
 				Sub Blink Enable : <input type="checkbox" id="subenable" />
 				<br />
-				Blink: <select id="time">
-					<option value="1000">1 Second</option>
-					<option value="2000">2 Seconds</option>
-					<option value="3000">3 Seconds</option>
-					<option value="4000">4 Seconds</option>
-					<option value="5000">5 Seconds</option>
-					<option value="6000">6 Seconds</option>
-					<option value="7000">7 Seconds</option>
-					<option value="8000">8 Seconds</option>
-					<option value="9000">9 Seconds</option>
-					<option value="10000">10 Seconds</option>
-				</select>
+				Blink Length: <input id='time' type=range min=1000 max=30000 value=1000 step=1000 list="numbers" oninput="$('#amount')[0].value=$('#time')[0].value/1000" />
+				<br />
+				<output id="amount" name="amount" for="rangeInput">1</output> seconds
 				<br />
 				Color: <select id="color">
 					<option value='{"on":true, "sat":255, "bri":255,"hue":47695}'>bleedPurple</option>
@@ -50,6 +41,7 @@
 					<option value='{"on":true, "sat":255, "bri":255,"hue":25500}'>Green</option>
 					<option value='{"on":true, "sat":255, "bri":255,"hue":56100}'>Pink</option>
 					<option value='{"on":true, "sat":255, "bri":255,"hue":46920}'>Blue</option>
+					<option value='{"on":true, "sat":255, "bri":255,"hue":7067}'>Orange</option>
 					<option value='{"on":true, "sat":0}'>White</option>
 					<option value='{"on":false}'>Off</option>
 				</select>
