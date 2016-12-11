@@ -157,7 +157,7 @@ function onMessage(evt)
 			mod |= uname == $("#cname")[0].value.toLowerCase();
 			mod = Boolean(mod);
 			message = evt.data.split(" :")[2];
-			if(message.startsWith($("#ctext")[0].value + " "))
+			if(message.startsWith($("#ctext")[0].value + " ") && mod)
 			{
 				message = message.replace($("#ctext")[0].value + " ", "");
 				message = message.trimLeft();
