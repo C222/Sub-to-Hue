@@ -162,25 +162,9 @@ function onMessage(evt)
 				message = message.replace($("#ctext")[0].value + " ", "");
 				message = message.trimLeft();
 				message = message.trimRight("\n");
-				color = Color.parse(message);
-				if (color == null)
+				if (message == "black" || message == "off")
 				{
-					color = Color.get(message);
-				}
-				if (color != null)
-				{
-					color = color.rgbData();
-					color = colorConverter.rgbToXyBri({r: color[0]/255,
-						g: color[1]/255,
-						b: color[2]/255});
-					to_send = {"on":true,
-						"bri":Math.round(color.bri * 255),
-						"xy":[color.x, color.y]};
-					if ($("#bright")[0].checked)
-					{
-						to_send.bri = 127 + (255 - 127) * (to_send.bri) / (255);
-						to_send.bri = Math.round(to_send.bri);
-					}
+					to_send = {"on":false};
 					for (var b in bulbs)
 					{
 						lambda = function(bno)
@@ -193,6 +177,39 @@ function onMessage(evt)
 					}
 					writeToScreen("<h1>" + dname + "</h1>");
 					writeToScreen("Set color to " + message);
+				}
+				else
+				{
+					color = Color.parse(message);
+					if (color == null)
+					{
+						color = Color.get(message);
+					}
+					if (color != null)
+					{
+						color = color.rgbData();
+						color = colorConverter.rgbToXyBri({r: color[0]/255,
+							g: color[1]/255,
+							b: color[2]/255});
+						to_send = {"on":true,
+							"bri":Math.round(color.bri * 255),
+							"xy":[color.x, color.y]};
+						brimin = parseInt($("#brimin")[0].value);
+						to_send.bri = brimin + (255 - brimin) * (to_send.bri) / (255);
+						to_send.bri = Math.round(to_send.bri);
+						for (var b in bulbs)
+						{
+							lambda = function(bno)
+							{
+								$.getJSON("http://" + ip + "/api/" + hueuser + "/lights/" + bno, function(data)
+								{
+									doColor(JSON.stringify(to_send), bno, false);
+								});
+							}(b);
+						}
+						writeToScreen("<h1>" + dname + "</h1>");
+						writeToScreen("Set color to " + message);
+					}
 				}
 			}
 		}

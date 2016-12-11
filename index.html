@@ -51,7 +51,9 @@
 				<br />
 				<input type="text" id="ctext" placeholder="!commandhere" value="!color"/>
 				<br />
-				Bright Mode : <input type="checkbox" id="bright" />
+				Min Brightness: <input id='brimin' type=range min=0 max=255 value=1 step=1 list="numbers" oninput="$('#mamount')[0].value=Math.round($('#brimin')[0].value/255*100)" />
+				<br />
+				<output id="mamount" name="amount" for="rangeInput">0</output>%
 			</div>
 			<div id="output"></div>
 		</div>
