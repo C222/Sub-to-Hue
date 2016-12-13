@@ -7,11 +7,40 @@ var bleedPurple = '{"on":true, "sat":255, "bri":255,"hue":47695}';
 var bulbOff = '{"on":false}';
 var lock = false;
 
+function doColor(color, b, lockend)
+{
+	console.log("Setting " + bulbs[b].name + " to " + color);
+	$.ajax({
+		url: "http://" + ip + "/api/" + hueuser + "/lights/" + b + "/state",
+		type: 'PUT',
+		data: color
+	});
+	lock = lockend;
+}
+
 function init()
 {
 	output = document.getElementById("output");
 	$("#chatdis").prop("disabled",true);
-	/*testWebSocket();*/
+}
+
+function send_to_hue(str, lock)
+{
+	for (var b in bulbs)
+	{
+		lambda = function(bno)
+		{
+			$.getJSON("http://" + ip + "/api/" + hueuser + "/lights/" + bno, function(data)
+			{
+				doColor(str, bno, lock);
+			});
+		}(b);
+	}
+}
+
+function send_obj_to_hue(obj, lock)
+{
+	send_to_hue(JSON.stringify(obj), lock)
 }
 
 function startHue()
@@ -26,10 +55,6 @@ function startHue()
 	{
 		$.post("http://" + ip + "/api", '{"devicetype":"subtohue1458949"}', finishHue);
 	}
-
-	/*console.log(reply);
-
-	}*/
 }
 
 function finishHue(data)
@@ -57,30 +82,19 @@ function purpleHome()
 	if(!lock)
 	{
 		lock = true;
-		for (var b in bulbs)
+		$.getJSON("http://" + ip + "/api/" + hueuser + "/lights/1", function(data)
 		{
-			lambda = function(bno)
+			oldcolor = data.state;
+			send_to_hue($("#color").val(), true);
+			console.log(data);
+			console.log(oldcolor);
+			for (i=1000; i < parseInt($("#time").val()); i += 1000)
 			{
-				$.getJSON("http://" + ip + "/api/" + hueuser + "/lights/" + bno, function(data)
-				{
-					oldcolor = JSON.stringify(data.state);
-					doColor($("#color").val(), bno, true);
-					window.setTimeout(doColor, parseInt($("#time").val()), oldcolor, bno, false);
-				});
-			}(b);
-		}
+				window.setTimeout(send_obj_to_hue, i, {alert: "select"}, false);
+			}
+			window.setTimeout(send_obj_to_hue, parseInt($("#time").val()), oldcolor, false);
+		});
 	}
-}
-
-function doColor(color, b, lockend)
-{
-	console.log("Setting " + bulbs[b].name + " to " + color);
-	$.ajax({
-		url: "http://" + ip + "/api/" + hueuser + "/lights/" + b + "/state",
-		type: 'PUT',
-		data: color
-	});
-	lock = lockend;
 }
 
 function cacheBulbs(data)
@@ -131,7 +145,6 @@ function onMessage(evt)
 			tmi = evt.data.split(" :tmi.twitch.tv ");
 			if(tmi.length > 1 && tmi[1].startsWith("USERNOTICE"))
 			{
-				/*alert(evt.data);*/
 				user = tmi[0].split("display-name=")[1].split(";")[0];
 				message = tmi[1].split(":")[1];
 				writeToScreen("<h1>" + user + "</h1>");
@@ -140,7 +153,6 @@ function onMessage(evt)
 					writeToScreen(message);
 				}
 				purpleHome();
-				/*alert(user);*/
 			}
 			else if(tmi.length == 1 && tmi[0].startsWith(":twitchnotify!twitchnotify@twitchnotify.tmi.twitch.tv PRIVMSG"))
 			{
@@ -165,16 +177,7 @@ function onMessage(evt)
 				if (message == "black" || message == "off")
 				{
 					to_send = {"on":false};
-					for (var b in bulbs)
-					{
-						lambda = function(bno)
-						{
-							$.getJSON("http://" + ip + "/api/" + hueuser + "/lights/" + bno, function(data)
-							{
-								doColor(JSON.stringify(to_send), bno, false);
-							});
-						}(b);
-					}
+					send_obj_to_hue(to_send, false);
 					writeToScreen("<h1>" + dname + "</h1>");
 					writeToScreen("Set color to " + message);
 				}
@@ -197,16 +200,7 @@ function onMessage(evt)
 						brimin = parseInt($("#brimin")[0].value);
 						to_send.bri = brimin + (255 - brimin) * (to_send.bri) / (255);
 						to_send.bri = Math.round(to_send.bri);
-						for (var b in bulbs)
-						{
-							lambda = function(bno)
-							{
-								$.getJSON("http://" + ip + "/api/" + hueuser + "/lights/" + bno, function(data)
-								{
-									doColor(JSON.stringify(to_send), bno, false);
-								});
-							}(b);
-						}
+						send_obj_to_hue(to_send, false);
 						writeToScreen("<h1>" + dname + "</h1>");
 						writeToScreen("Set color to " + message);
 					}
@@ -214,13 +208,6 @@ function onMessage(evt)
 			}
 		}
 	}
-	/*console.log(evt.data);
-	user = evt.data.split(" :")[1].split("!")[0].toLowerCase();
-	text = evt.data.split(" :").slice(2).join(" :");
-	console.log(user);
-	console.log(evt);
-	writeToScreen('<span style="color: blue;">' + user + ': ' + text +'</span>');
-	websocket.close();*/
 }
 
 function onError(evt)
