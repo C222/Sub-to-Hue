@@ -27,6 +27,10 @@
 				<br />
 				<button class="pure-button" id="huecon" onclick="startHue()">Hue Connect</button>
 				<br />
+				Min Brightness: <input id='brimin' type=range min=0 max=255 value=0 step=1 list="numbers" oninput="$('#mamount')[0].value=Math.round($('#brimin')[0].value/255*100)" />
+				<br />
+				<output id="mamount" name="amount" for="rangeInput">0</output>%
+				<br />
 				<br />
 				Sub Blink Enable : <input type="checkbox" id="subenable" />
 				<br />
@@ -34,27 +38,12 @@
 				<br />
 				<output id="amount" name="amount" for="rangeInput">1</output> seconds
 				<br />
-				Color: <select id="color">
-					<option value='{"on":true, "sat":255, "bri":255,"hue":47545}'>bleedPurple</option>
-					<option value='{"on":true, "sat":255, "bri":255,"hue":0}'>Red</option>
-					<option value='{"on":true, "sat":255, "bri":255,"hue":10923}'>Yellow</option>
-					<option value='{"on":true, "sat":255, "bri":255,"hue":25500}'>Green</option>
-					<option value='{"on":true, "sat":235, "bri":255,"hue":59632}'>Pink</option>
-					<option value='{"on":true, "sat":255, "bri":255,"hue":43690}'>Blue</option>
-					<option value='{"on":true, "sat":255, "bri":255,"hue":7068}'>Orange</option>
-					<option value='{"on":true, "sat":255, "bri":253,"hue":4360}'>M1ndr</option>
-					<option value='{"on":true, "sat":0, "bri":255}'>White</option>
-					<option value='{"on":false}'>Off</option>
-				</select>
+				Color: <input type="text" value="bleedPurple" id="color"/>
 				<br />
 				<br />
 				Mod Command Enable : <input type="checkbox" id="cmdenable" />
 				<br />
 				<input type="text" id="ctext" placeholder="!commandhere" value="!color"/>
-				<br />
-				Min Brightness: <input id='brimin' type=range min=0 max=255 value=1 step=1 list="numbers" oninput="$('#mamount')[0].value=Math.round($('#brimin')[0].value/255*100)" />
-				<br />
-				<output id="mamount" name="amount" for="rangeInput">0</output>%
 			</div>
 			<div id="output"></div>
 		</div>

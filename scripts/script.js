@@ -18,6 +18,29 @@ function hsl_to_hsb(hsl)
 	return [h, s, b];
 }
 
+function msg_to_color(message)
+{
+	color = Color.parse(message);
+	if (color == null)
+	{
+		color = Color.get(message);
+	}
+	if (color == null)
+	{
+		return null;
+	}
+	color = color.hslData();
+	color = hsl_to_hsb(color);
+	color_obj = {"on":true,
+		"sat": Math.round(color[1]*255),
+		"hue": Math.round(color[0]*65535)
+	};
+	brimin = parseInt($("#brimin")[0].value);
+	color_obj.bri = brimin + (255 - brimin) * Math.round(color[2]*255) / (255);
+	color_obj.bri = Math.round(color_obj.bri);
+	return color_obj;
+}
+
 function doColor(color, b, lockend)
 {
 	console.log("Setting " + bulbs[b].name + " to " + color);
@@ -96,7 +119,7 @@ function purpleHome()
 		$.getJSON("http://" + ip + "/api/" + hueuser + "/lights/1", function(data)
 		{
 			oldcolor = data.state;
-			send_to_hue($("#color").val(), true);
+			send_obj_to_hue(msg_to_color($("#color").val()), true);
 			console.log(data);
 			console.log(oldcolor);
 			for (i=1000; i < parseInt($("#time").val()); i += 1000)
@@ -194,24 +217,11 @@ function onMessage(evt)
 				}
 				else
 				{
-					color = Color.parse(message);
-					if (color == null)
-					{
-						color = Color.get(message);
-					}
+					color = msg_to_color(message);
 					if (color != null)
 					{
-						color = color.hslData();
-						color = hsl_to_hsb(color);
-						to_send = {"on":true,
-							"sat": Math.round(color[1]*255),
-							"hue": Math.round(color[0]*65535)
-						};
-						brimin = parseInt($("#brimin")[0].value);
-						to_send.bri = brimin + (255 - brimin) * Math.round(color[2]*255) / (255);
-						to_send.bri = Math.round(to_send.bri);
-						send_obj_to_hue(to_send, false);
-						console.log(to_send);
+						send_obj_to_hue(color, false);
+						console.log(color);
 						writeToScreen("<h1>" + dname + "</h1>");
 						writeToScreen("Set color to " + message);
 					}
