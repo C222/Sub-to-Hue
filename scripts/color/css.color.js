@@ -1,6 +1,6 @@
 /*
  * color.js CSS Module
- * 
+ *
  * By Eli Grey, http://eligrey.com
  * Licensed under the MIT License
  *   See https://github.com/eligrey/color.js/blob/master/LICENSE.md
@@ -162,10 +162,13 @@
 		white: 0xFFFFFF,
 		whitesmoke: 0xF5F5F5,
 		yellow: 0xFFFF00,
-		yellowgreen: 0x9ACD32
+		yellowgreen: 0x9ACD32,
+		twitchpurple: 0x6441A4,
+		bleedpurple: 0x5A00FF,
+		m1ndr: 0xfd6500
 	},
 	color;
-	
+
 	for (color in cssColors) {
 		if (cssColors.hasOwnProperty(color)) {
 			Color.define(color, cssColors[color]);
