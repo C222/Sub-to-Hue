@@ -7,6 +7,17 @@ var bleedPurple = '{"on":true, "sat":255, "bri":255,"hue":47695}';
 var bulbOff = '{"on":false}';
 var lock = false;
 
+function hsl_to_hsb(hsl)
+{
+	l = hsl[2];
+	s_hsl = hsl[1];
+	h = hsl[0];
+	b = (2 * l + s_hsl * (1 - Math.abs(2 * l - 1))) / 2;
+	s = (2 * (b - l)) / b;
+
+	return [h, s, b];
+}
+
 function doColor(color, b, lockend)
 {
 	console.log("Setting " + bulbs[b].name + " to " + color);
@@ -190,17 +201,17 @@ function onMessage(evt)
 					}
 					if (color != null)
 					{
-						color = color.rgbData();
-						color = colorConverter.rgbToXyBri({r: color[0]/255,
-							g: color[1]/255,
-							b: color[2]/255});
+						color = color.hslData();
+						color = hsl_to_hsb(color);
 						to_send = {"on":true,
-							"bri":Math.round(color.bri * 255),
-							"xy":[color.x, color.y]};
+							"sat": Math.round(color[1]*255),
+							"hue": Math.round(color[0]*65535)
+						};
 						brimin = parseInt($("#brimin")[0].value);
-						to_send.bri = brimin + (255 - brimin) * (to_send.bri) / (255);
+						to_send.bri = brimin + (255 - brimin) * Math.round(color[2]*255) / (255);
 						to_send.bri = Math.round(to_send.bri);
 						send_obj_to_hue(to_send, false);
+						console.log(to_send);
 						writeToScreen("<h1>" + dname + "</h1>");
 						writeToScreen("Set color to " + message);
 					}
