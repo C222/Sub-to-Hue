@@ -120,12 +120,10 @@ function purpleHome()
 		{
 			oldcolor = data.state;
 			send_obj_to_hue(msg_to_color($("#color").val()), true);
-			console.log(data);
-			console.log(oldcolor);
-			for (i=1000; i < parseInt($("#time").val()); i += 1000)
-			{
-				window.setTimeout(send_obj_to_hue, i, {alert: "select"}, false);
-			}
+			// for (i=1000; i < parseInt($("#time").val()); i += 1000) //Disco-blinky section
+			// {
+			// 	window.setTimeout(send_obj_to_hue, i, {alert: "select"}, false);
+			// }
 			window.setTimeout(send_obj_to_hue, parseInt($("#time").val()), oldcolor, false);
 		});
 	}

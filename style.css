@@ -43,3 +43,49 @@ p
 	overflow-y: scroll;
 	height: 100%;
 }
+
+#color option.o1
+{
+    background-color: #5A00FF;
+	color: white;
+}
+#color option.o2
+{
+    background-color: red;
+	color: white;
+}
+#color option.o3
+{
+    background-color: orange;
+}
+#color option.o4
+{
+    background-color: yellow;
+}
+#color option.o5
+{
+    background-color: green;
+	color: white;
+}
+#color option.o6
+{
+    background-color: blue;
+	color: white;
+}
+#color option.o7
+{
+    background-color: pink;
+}
+#color option.o8
+{
+    background-color: #fd6500;
+}
+#color option.o9
+{
+    background-color: white;
+}
+#color option.o10
+{
+    background-color: black;
+	color: white;
+}
