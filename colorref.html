@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+
+		<title>Sub to Hue</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="scripts/color/color.js"></script>
+		<script src="scripts/color/css.color.js"></script>
+	<body>
+		<table id="colortable">
+			<tr><th>Color Name</th><th>Example</th></tr>
+		</table>
+		<script>
+		Object.keys(Color.all()).forEach(
+			function(e)
+			{
+				$('#colortable').append("<tr><td>" + e + '</td><td style="background-color: ' + Color.get(e).hexTriplet() + ';"></td></tr>');
+			}
+		);
+		</script>
+	</body>
+</html>
