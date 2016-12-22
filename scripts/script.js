@@ -175,16 +175,28 @@ function onMessage(evt)
 		if ($("#subenable")[0].checked)
 		{
 			tmi = evt.data.split(" :tmi.twitch.tv ");
-			if(tmi.length > 1 && tmi[1].startsWith("USERNOTICE"))
+			if(tmi.length > 1)
 			{
-				user = tmi[0].split("display-name=")[1].split(";")[0];
-				message = tmi[1].split(":")[1];
-				writeToScreen("<h1>" + user + "</h1>");
-				if (message != undefined)
+				usernotice = tmi[1].startsWith("USERNOTICE");
+				resub = tmi[0].split(";msg-id=")[1].split(";")[0] == "resub";
+				charity = tmi[0].split(";msg-id=")[1].split(";")[0] == "charity";
+				if(usernotice && resub)
 				{
-					writeToScreen(message);
+					user = tmi[0].split("display-name=")[1].split(";")[0];
+					message = tmi[1].split(":")[1];
+					writeToScreen("<h1>" + user + "</h1>");
+					if (message != undefined)
+					{
+						writeToScreen(message);
+					}
+					purpleHome();
 				}
-				purpleHome();
+				if(usernotice)
+				{
+					sysmsg = tmi[0].split(";system-msg=")[1].split(";")[0];
+					sysmsg = sysmsg.split("\\s").join(" ");
+					writeToScreen(sysmsg);
+				}
 			}
 			else if(tmi.length == 1 && tmi[0].startsWith(":twitchnotify!twitchnotify@twitchnotify.tmi.twitch.tv PRIVMSG"))
 			{
